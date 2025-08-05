@@ -1,27 +1,29 @@
-from pydantic import BaseModel, Field, PositiveFloat
-from typing import List, Optional
+from pydantic import BaseModel, Field, PositiveFloat, PositiveInt
+from typing import Annotated
 from datetime import datetime
 
-class Config:
-    orm_mode = True
+class BaseSchema(BaseModel):
+    class Config:
+        extra = "forbid"
+        from_attributes = True
 
-class Category(BaseModel):
-    name: str = Field(..., max_length=100)
+class Category(BaseSchema):
+    name: Annotated[str, Field(description="Category Name", example="Eletronics", max_length=100)]
 
 class CategoryOut(Category):
-    pk_id: int
+    pk_id: PositiveInt
 
-class Product(BaseModel):
-    name: str = Field(..., max_length=100)
-    code: str = Field(..., max_length=50)
+class Product(BaseSchema):
+    name: Annotated[str, Field(description="Product Name", example="LapTop", max_length=100)]
+    code: Annotated[str, Field(description="Product Description", example="LAP123", max_length=50)]
     preco: PositiveFloat
 
 class ProductOut(Product):
     pk_id: int
-    create_at: datetime
+    create_at: Annotated[datetime, Field(description="Create Date", example="01/01/2001")]
     category: CategoryOut
 
-class StockMovement(BaseModel):
+class StockMovement(BaseSchema):
     product_id: int
     quantity: int
     type: str = Field(..., regex="^(in|out)$")
@@ -31,7 +33,7 @@ class StockMovementOut(StockMovement):
     pk_id: int
     product: ProductOut
 
-class StockReport(BaseModel):
+class StockReport(BaseSchema):
     product_id: int
     current_stock: int
     total_entries: int
