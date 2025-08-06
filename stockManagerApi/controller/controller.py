@@ -9,7 +9,7 @@ def get_categories(db: Session):
     return db.query(models.CategoryModel).all()
 
 def create_category(db: Session, data: schemas.Category):
-    obj = models.Category(name=data.name)
+    obj = models.CategoryModel(name=data.name)
     db.add(obj); db.commit(); db.refresh(obj)
     return obj
 

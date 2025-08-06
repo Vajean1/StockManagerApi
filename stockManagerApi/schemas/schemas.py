@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, PositiveFloat, PositiveInt
-from typing import Annotated
+from typing import Annotated, Optional
 from datetime import datetime
 
 class BaseSchema(BaseModel):
@@ -7,16 +7,38 @@ class BaseSchema(BaseModel):
         extra = "forbid"
         from_attributes = True
 
-class Category(BaseSchema):
-    name: Annotated[str, Field(description="Category Name", example="Eletronics", max_length=100)]
+class CategoryBase(BaseModel):
+    name: str
+
+class CategoryCreate(CategoryBase):
+    pass
+
+class Category(CategoryBase):
+    id: int
+    uuid: str
+
+    class Config:
+        from_attributes = True
 
 class CategoryOut(Category):
     pk_id: PositiveInt
 
-class Product(BaseSchema):
-    name: Annotated[str, Field(description="Product Name", example="LapTop", max_length=100)]
-    code: Annotated[str, Field(description="Product Description", example="LAP123", max_length=50)]
-    preco: PositiveFloat
+class ProductBase(BaseModel):
+    name: str
+    code: str
+    preco: float
+    create_at: Optional[datetime] = None
+
+class ProductCreate(ProductBase):
+    pass
+
+class Product(ProductBase):
+    id: int
+    uuid: str
+    category_id: int
+
+    class Config:
+        from_attributes = True
 
 class ProductOut(Product):
     pk_id: PositiveInt

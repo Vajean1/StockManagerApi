@@ -1,23 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from controller import controller
+from database import get_db
 from schemas import schemas
-import database
-
+from controller import controller
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
-def get_db():
-    db = database.sessionlocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@router.post("/", response_model=schemas.Category)
+def create_category(
+    data: schemas.CategoryCreate,
+    db: Session = Depends(get_db)
+):
+    return controller.create_category(db, data)
 
-@router.get("/", status_code=status.HTTP_200_OK,response_model=list[schemas.CategoryOut])
+@router.get("/", response_model=list[schemas.Category])
 def read_categories(db: Session = Depends(get_db)):
     return controller.get_categories(db)
-
-@router.post("/", response_model=schemas.CategoryOut, status_code=status.HTTP_201_CREATED)
-def create_category(cat: schemas.Category, db: Session = Depends(get_db)):
-    return controller.create_category(db, cat)

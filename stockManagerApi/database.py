@@ -1,11 +1,25 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models.models import BaseModel
+from sqlalchemy.orm import sessionmaker, Session
 
-SQLITE_DATABASE_URL = "sqlite:///./stock_manager.db"
+# Create SQLite database URL
+SQLALCHEMY_DATABASE_URL = "sqlite:///./stock_manager.db"
 
-engine = create_engine(SQLITE_DATABASE_URL, connect_args={"check_same_thread": False})
-sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create engine
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+# Create SessionLocal class
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
+    from models.models import BaseModel
     BaseModel.metadata.create_all(bind=engine)
+
+# Dependency to get DB session
+def get_db() -> Session:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
