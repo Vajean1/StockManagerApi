@@ -1,16 +1,13 @@
 from uuid import uuid4
 from sqlalchemy import Integer, String, Float, DateTime, ForeignKey, CheckConstraint
-from sqlalchemy.dialects.sqlite import UUID as SQLiteUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 #Base model for all models - Contains common fields and UUID generation
 #UUID is a unique identifier for each record that is generated automatically and not visible to the user
 # Recive a declarative base from SQLAlchemy that allows us to define models
 class BaseModel(DeclarativeBase):
-    id: Mapped[uuid4] = mapped_column(
-        SQLiteUUID(as_uuid=True), default=uuid4, primary_key=True
-    )
-
+    id: Mapped[str] = mapped_column(
+        String(36), default=lambda: str(uuid4()), primary_key=True)
 
 class CategoryModel(BaseModel):
     __tablename__ = 'categories'
@@ -34,7 +31,7 @@ class ProductModel(BaseModel):
     id_category: Mapped[int] = mapped_column(ForeignKey('categories.pk_id'))
 
     category: Mapped[CategoryModel] = relationship(
-        "Category", back_populates="products"
+        "CategoryModel", back_populates="products"
     )
     stock_movements: Mapped[list["StockMovement"]] = relationship(
         "StockMovement", back_populates="product"

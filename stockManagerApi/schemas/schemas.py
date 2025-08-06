@@ -19,15 +19,15 @@ class Product(BaseSchema):
     preco: PositiveFloat
 
 class ProductOut(Product):
-    pk_id: int
+    pk_id: PositiveInt
     create_at: Annotated[datetime, Field(description="Create Date", example="01/01/2001")]
     category: CategoryOut
 
 class StockMovement(BaseSchema):
-    product_id: int
-    quantity: int
-    type: str = Field(..., regex="^(in|out)$")
-    date_movement: datetime
+    product_id: PositiveInt
+    quantity: Annotated[int, Field(description="Product Quantity", example=2)]
+    type: Annotated[str, Field(description="Produuct Type", pattern="^(in|out)$")]
+    date_movement: Annotated[datetime, Field(description="Movement date")]
 
 class StockMovementOut(StockMovement):
     pk_id: int
@@ -35,6 +35,6 @@ class StockMovementOut(StockMovement):
 
 class StockReport(BaseSchema):
     product_id: int
-    current_stock: int
-    total_entries: int
-    total_exits: int
+    current_stock: Annotated[int, Field(description="Current Stock")]
+    total_entries: Annotated[int, Field(description="Total entries")]
+    total_exits: Annotated[int, Field(description="Total entries")]
