@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/local/app
+      - ./data:/usr/local/app/data
+    environment:
+      SQLALCHEMY_DATABASE_URL: "sqlite:///./data/stock_manager.db"
+    restart: unless-stopped
