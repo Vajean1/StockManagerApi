@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, PositiveFloat, PositiveInt
-from typing import Annotated, Optional
 from datetime import datetime
+from pydantic import BaseModel, PositiveInt,Field
+from typing import Annotated, Optional
 
 class BaseSchema(BaseModel):
     class Config:
@@ -26,11 +26,10 @@ class CategoryOut(Category):
 class ProductBase(BaseModel):
     name: str
     code: str
-    preco: float
-    create_at: Optional[datetime] = None
+    preco: Annotated[float, Field(gt=0, description="Product price")]
 
 class ProductCreate(ProductBase):
-    pass
+    create_at: datetime = Field(default_factory=datetime.now)
 
 class Product(ProductBase):
     id: int
@@ -45,18 +44,38 @@ class ProductOut(Product):
     create_at: Annotated[datetime, Field(description="Create Date", example="01/01/2001")]
     category: CategoryOut
 
-class StockMovement(BaseSchema):
-    product_id: PositiveInt
+class StockMovementBase(BaseModel):
+    product_id: Annotated[int, Field(gt=0, description="Product ID")]
     quantity: Annotated[int, Field(description="Product Quantity", example=2)]
-    type: Annotated[str, Field(description="Produuct Type", pattern="^(in|out)$")]
-    date_movement: Annotated[datetime, Field(description="Movement date")]
+    type: Annotated[str, Field(description="Movement Type", pattern="^(in|out)$")]
+    date_movement: datetime
+
+class StockMovementCreate(StockMovementBase):
+    date_movement: datetime = Field(default_factory=datetime.now)
+
+class StockMovementUpdate(BaseModel):
+    quantity: Optional[int] = Field(None, description="Product Quantity", example=2)
+    type: Optional[str] = Field(None, description="Movement Type", pattern="^(in|out)$")
+    date_movement: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class StockMovement(StockMovementBase):
+    id: int
+    uuid: str
+
+    class Config:
+        from_attributes = True
 
 class StockMovementOut(StockMovement):
     pk_id: int
-    product: ProductOut
 
-class StockReport(BaseSchema):
+class StockReport(BaseModel):
     product_id: int
-    current_stock: Annotated[int, Field(description="Current Stock")]
-    total_entries: Annotated[int, Field(description="Total entries")]
-    total_exits: Annotated[int, Field(description="Total entries")]
+    total_entries: int
+    total_exits: int
+    current_stock: int
+
+    class Config:
+        from_attributes = True

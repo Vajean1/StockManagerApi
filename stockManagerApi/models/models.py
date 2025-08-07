@@ -11,8 +11,8 @@ class BaseModel(DeclarativeBase):
 class CategoryModel(BaseModel):
     __tablename__ = 'categories'
 
-    # Single primary key
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    pk_id: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
 
     products: Mapped[list["ProductModel"]] = relationship(
@@ -23,6 +23,7 @@ class ProductModel(BaseModel):
     __tablename__ = 'products'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    pk_id: Mapped[int] = mapped_column(Integer)  # Add this line
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     preco: Mapped[float] = mapped_column(Float, nullable=False)
@@ -38,17 +39,12 @@ class ProductModel(BaseModel):
 
 class StockMovement(BaseModel):
     __tablename__ = 'stock_movements'
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    pk_id: Mapped[int] = mapped_column(Integer, nullable=False)  # Add pk_id field
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
-    quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    type: Mapped[str] = mapped_column(
-        String(10),
-        CheckConstraint("type IN ('in', 'out')"),
-        nullable=False
-    )
+    quantity: Mapped[int] = mapped_column(Integer)
+    type: Mapped[str] = mapped_column(String(3))  # 'in' or 'out'
     date_movement: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
-    product: Mapped[ProductModel] = relationship(
-        "ProductModel", back_populates="stock_movements"
-    )
+    product: Mapped["ProductModel"] = relationship("ProductModel", back_populates="stock_movements")
