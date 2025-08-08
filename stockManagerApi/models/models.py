@@ -4,7 +4,6 @@ from sqlalchemy import Integer, String, Float, DateTime, ForeignKey, CheckConstr
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class BaseModel(DeclarativeBase):
-    # Remove primary key from base model
     __abstract__ = True
     uuid: Mapped[str] = mapped_column(String(36), default=lambda: str(uuid4()))
 
@@ -23,7 +22,7 @@ class ProductModel(BaseModel):
     __tablename__ = 'products'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    pk_id: Mapped[int] = mapped_column(Integer)  # Add this line
+    pk_id: Mapped[int] = mapped_column(Integer)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     preco: Mapped[float] = mapped_column(Float, nullable=False)
@@ -41,10 +40,10 @@ class StockMovement(BaseModel):
     __tablename__ = 'stock_movements'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    pk_id: Mapped[int] = mapped_column(Integer, nullable=False)  # Add pk_id field
+    pk_id: Mapped[int] = mapped_column(Integer, nullable=False)
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
     quantity: Mapped[int] = mapped_column(Integer)
-    type: Mapped[str] = mapped_column(String(3))  # 'in' or 'out'
+    type: Mapped[str] = mapped_column(String(3)) 
     date_movement: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
     product: Mapped["ProductModel"] = relationship("ProductModel", back_populates="stock_movements")

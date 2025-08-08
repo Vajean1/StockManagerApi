@@ -1,8 +1,8 @@
-version: "3.8"
-
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -10,4 +10,6 @@ services:
       - ./data:/usr/local/app/data
     environment:
       SQLALCHEMY_DATABASE_URL: "sqlite:///./data/stock_manager.db"
+      PYTHONPATH: /usr/local/app
     restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload

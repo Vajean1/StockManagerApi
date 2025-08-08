@@ -14,11 +14,11 @@ def create_category(db: Session, data: schemas.Category):
     try:
         obj = models.CategoryModel(
             name=data.name,
-            pk_id=0  # Initialize with 0
+            pk_id=0 
         )
         db.add(obj)
         db.commit()
-        obj.pk_id = obj.id  # Set pk_id to match id after commit
+        obj.pk_id = obj.id
         db.commit()
         db.refresh(obj)
         return obj
@@ -46,11 +46,11 @@ def create_product(db: Session, data: schemas.ProductCreate, category_id: int):
             preco=data.preco,
             create_at=data.create_at,
             category_id=category_id,
-            pk_id=0  # Initialize with 0
+            pk_id=0 
         )
         db.add(obj)
         db.commit()
-        obj.pk_id = obj.id  # Set pk_id to match id after commit
+        obj.pk_id = obj.id 
         db.commit()
         db.refresh(obj)
         return obj
