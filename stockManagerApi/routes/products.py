@@ -15,7 +15,6 @@ def create_product(
     category_id: Annotated[int, Query(gt=0)],
     db: Session = Depends(get_db)
 ):
-    # Verificar se a categoria existe
     db_category = controller.get_category_by_id(db, category_id)
     if db_category is None:
         raise HTTPException(status_code=404, detail="Category not found")
